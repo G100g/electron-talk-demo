@@ -1,0 +1,29 @@
+{
+  "name": "electron-talk-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app/main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^5.0.1",
+    "electron-builder": "^20.40.2"
+  },
+  "build": {
+    "appId": "g100g.dev.electron-talk-demo",
+    "mac": {
+      "category": "your.app.category.type"
+    }
+  },
+  "dependencies": {
+    "hummus": "^1.0.104"
+  }
+}
