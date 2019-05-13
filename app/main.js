@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const path = require("path");
 
 const pdfFactory = require("./pdf");
@@ -28,6 +28,26 @@ function setup() {
         // when you should delete the corresponding element.
         win = null;
     });
+
+    // Messages
+
+    ipcMain.on("select-pdf", event => {
+        const selectedfiles = dialog.showOpenDialog(win, {
+            properties: ["openFile"],
+            filters: [{ name: "PDF", extensions: ["pdf"] }]
+        });
+        event.reply("pdf-selected", { files: selectedfiles });
+    });
+
+    ipcMain.on("concat-pdf", (event, [a, b]) => {
+        const outputPath = dialog.showSaveDialog(win, {
+            defaultPath: "concated.pdf"
+            // filters: [{ name: "PDF", extensions: ["pdf"] }]
+        });
+        console.log(outputPath);
+        pdf.combine(a, b, outputPath);
+        // event.reply("pdf-selected", { files: selectedfiles });
+    });
 }
 
 app,
@@ -53,10 +73,7 @@ app.on("activate", () => {
     }
 });
 
-// Messages
+// ipcMain.on("start-job", (event, { a, b }) => {
+//     event.reply("job-started", { a, b });
 
-ipcMain.on("start-job", (event, { a, b }) => {
-    pdf.combine(a, b);
-
-    event.reply("job-started", { a, b });
-});
+// });

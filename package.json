@@ -24,6 +24,7 @@
     }
   },
   "dependencies": {
-    "hummus": "^1.0.104"
+    "hummus": "^1.0.104",
+    "hummus-recipe": "^1.8.8"
   }
 }
