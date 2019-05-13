@@ -48,7 +48,6 @@ function setupDND(holder) {
 
         addFiles([...e.dataTransfer.files].map(({ path }) => path).slice(0, 1));
 
-        updateList();
         return false;
     };
 }
