@@ -5,12 +5,15 @@ const {
     ipcMain,
     dialog,
     Notification,
-    shell
+    shell,
+    Tray,
+    nativeImage
 } = require("electron");
 
 const path = require("path");
 
 let win;
+let tray;
 
 const pdfFactory = require("./pdf");
 const pdf = pdfFactory();
@@ -46,7 +49,29 @@ function setup() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", setup);
+app.on("ready", () => {
+    tray = new Tray(nativeImage.createFromPath("./app/tray.png"));
+    const menu = Menu.buildFromTemplate([
+        {
+            label: "Actions",
+            submenu: [
+                {
+                    label: "Bologna JS",
+                    click: (item, window, event) => {
+                        //console.log(item, event);
+                        shell.openExternalSync("https://www.bolognajs.com");
+                    }
+                }
+            ]
+        },
+        { type: "separator" },
+        { role: "quit" } // "role": system prepared action menu
+    ]);
+    tray.setToolTip("PDF Merge");
+    //top.tray.setTitle("Tray Example"); // macOS only
+    tray.setContextMenu(menu);
+    setup();
+});
 
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {
