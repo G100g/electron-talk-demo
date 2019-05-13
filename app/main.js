@@ -1,19 +1,26 @@
 const {
     app,
+    Menu,
     BrowserWindow,
     ipcMain,
     dialog,
-    Notification
+    Notification,
+    shell
 } = require("electron");
+
 const path = require("path");
 
-const pdfFactory = require("./pdf");
+let win;
 
+const pdfFactory = require("./pdf");
 const pdf = pdfFactory();
+
+app.setName("PDF Merge");
 
 function setup() {
     // Create the browser window.
-    let win = new BrowserWindow({
+    win = new BrowserWindow({
+        title: "PDF Merge",
         width: 800,
         height: 600,
         webPreferences: {
@@ -34,41 +41,12 @@ function setup() {
         // when you should delete the corresponding element.
         win = null;
     });
-
-    // Messages
-
-    ipcMain.on("select-pdf", event => {
-        const selectedfiles = dialog.showOpenDialog(win, {
-            properties: ["openFile"],
-            filters: [{ name: "PDF", extensions: ["pdf"] }]
-        });
-
-        const notificaton = new Notification({
-            title: "New PDF file selected",
-            body: "The file will be merged"
-        });
-
-        notificaton.show();
-
-        event.reply("pdf-selected", { files: selectedfiles });
-    });
-
-    ipcMain.on("concat-pdf", (event, [a, b]) => {
-        const outputPath = dialog.showSaveDialog(win, {
-            defaultPath: "concated.pdf"
-            // filters: [{ name: "PDF", extensions: ["pdf"] }]
-        });
-        console.log(outputPath);
-        pdf.combine(a, b, outputPath);
-        // event.reply("pdf-selected", { files: selectedfiles });
-    });
 }
 
-app,
-    // This method will be called when Electron has finished
-    // initialization and is ready to create browser windows.
-    // Some APIs can only be used after this event occurs.
-    app.on("ready", setup);
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.on("ready", setup);
 
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {
@@ -83,11 +61,114 @@ app.on("activate", () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (win === null) {
-        createWindow();
+        setup();
     }
 });
 
-// ipcMain.on("start-job", (event, { a, b }) => {
-//     event.reply("job-started", { a, b });
+// Messages
 
-// });
+ipcMain.on("select-pdf", event => {
+    const selectedfiles = selectPdf();
+
+    if (selectedfiles) {
+        event.reply("pdf-selected", { files: selectedfiles });
+    }
+});
+
+ipcMain.on("concat-pdf", (event, [a, b]) => {
+    concatPdf(a, b);
+});
+
+// Functions
+
+function selectPdf() {
+    const selectedfiles = dialog.showOpenDialog(win, {
+        properties: ["openFile"],
+        filters: [{ name: "PDF", extensions: ["pdf"] }]
+    });
+
+    if (selectedfiles && selectedfiles.length) {
+        const notificaton = new Notification({
+            title: "New PDF file selected",
+            body: "The file will be merged"
+        });
+
+        notificaton.show();
+    }
+
+    return selectedfiles;
+}
+
+function concatPdf(a, b) {
+    const outputPath = dialog.showSaveDialog(win, {
+        defaultPath: "concated.pdf"
+    });
+
+    if (outputPath) {
+        pdf.combine(a, b, outputPath);
+
+        const notificaton = new Notification({
+            title: "PDF merged"
+        });
+
+        notificaton.show();
+
+        shell.openItem(outputPath);
+    }
+}
+
+const isMac = process.platform === "darwin";
+
+const template = [
+    // { role: 'appMenu' }
+    ...(isMac
+        ? [
+              {
+                  label: app.getName(),
+                  submenu: [
+                      { role: "about" },
+                      { type: "separator" },
+                      { role: "services" },
+                      { type: "separator" },
+                      { role: "hide" },
+                      { role: "hideothers" },
+                      { role: "unhide" },
+                      { type: "separator" },
+                      { role: "quit" }
+                  ]
+              }
+          ]
+        : []),
+    // { role: 'fileMenu' }
+    {
+        label: "File",
+        submenu: [
+            {
+                label: "Select PDF",
+                click() {
+                    const selectedfiles = selectPdf();
+                    if (selectedfiles) {
+                        win.webContents.send("pdf-selected", {
+                            files: selectedfiles
+                        });
+                    }
+                }
+            },
+            isMac ? { role: "close" } : { role: "quit" }
+        ]
+    },
+    {
+        label: "Actions",
+        submenu: [
+            {
+                label: "Merge PDFs",
+                click() {
+                    win.webContents.send("create-pdf");
+                }
+            }
+        ]
+    }
+];
+
+const menu = Menu.buildFromTemplate(template);
+Menu.setApplicationMenu(menu);

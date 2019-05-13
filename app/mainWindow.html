@@ -3,15 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <title>PDF Merge</title>
+    <link rel="stylesheet" href="milligram.min.css" />
     <style>
-    
-    #pdf-list {
-        min-height: 200px;
-        background-color: rgb(226, 255, 169);
-        color: black;
-    }
-    
+        #pdf-list {
+            padding: 3rem;
+            min-height: 200px;
+            background-color: #eee;
+            color: black;
+        }
     </style>
 
 </head>
@@ -20,18 +20,18 @@
     <h1>PDF Merge</h1>
 
     <button type="button" id="select-pdf">Select PDF</button>
- 
+
     <ul id="pdf-list">
 
     </ul>
 
     <button type="button" id="concat-pdf">Concat</button>
-
+    <button type="button" id="clear">Clear</button>
     <p>
         We are using node
-        <script>document.write(process.versions.node)</script>,
+        <script>document.write(process.versions.node)</script><br>
         Chrome
-        <script>document.write(process.versions.chrome)</script>,
+        <script>document.write(process.versions.chrome)</script><br>
         and Electron
     </p>
     <script src="./mainWindow.js"></script>.
