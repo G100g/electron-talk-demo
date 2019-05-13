@@ -1,6 +1,7 @@
 const {
     app,
     Menu,
+    globalShortcut,
     BrowserWindow,
     ipcMain,
     dialog,
@@ -35,7 +36,7 @@ function setup() {
     win.loadFile(path.join(__dirname, "mainWindow.html"));
 
     // Open the DevTools.
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
 
     // Emitted when the window is closed.
     win.on("closed", () => {
@@ -71,6 +72,10 @@ app.on("ready", () => {
     //top.tray.setTitle("Tray Example"); // macOS only
     tray.setContextMenu(menu);
     setup();
+
+    globalShortcut.register("CommandOrControl+I", () => {
+        win.webContents.openDevTools();
+    });
 });
 
 // Quit when all windows are closed.
@@ -170,6 +175,7 @@ const template = [
         submenu: [
             {
                 label: "Select PDF",
+                accelerator: "CmdOrCtrl+O",
                 click() {
                     const selectedfiles = selectPdf();
                     if (selectedfiles) {
@@ -187,6 +193,7 @@ const template = [
         submenu: [
             {
                 label: "Merge PDFs",
+                accelerator: "CmdOrCtrl+S",
                 click() {
                     win.webContents.send("create-pdf");
                 }
