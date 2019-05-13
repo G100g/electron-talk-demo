@@ -17,6 +17,15 @@ document.addEventListener("DOMContentLoaded", function() {
     $concatPdf.addEventListener("click", function() {
         ipcRenderer.send("concat-pdf", pdfList);
     });
+
+    $pdfList.addEventListener("drop", e => {
+        e.preventDefault();
+
+        for (let f of e.dataTransfer.files) {
+            console.log("File(s) you dragged here: ", f.path);
+        }
+        // ipcRenderer.send('ondragstart', '/path/to/item')
+    });
 });
 
 function updateList() {

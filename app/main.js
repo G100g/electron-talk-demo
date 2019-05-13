@@ -1,4 +1,10 @@
-const { app, BrowserWindow, ipcMain, dialog } = require("electron");
+const {
+    app,
+    BrowserWindow,
+    ipcMain,
+    dialog,
+    Notification
+} = require("electron");
 const path = require("path");
 
 const pdfFactory = require("./pdf");
@@ -36,6 +42,14 @@ function setup() {
             properties: ["openFile"],
             filters: [{ name: "PDF", extensions: ["pdf"] }]
         });
+
+        const notificaton = new Notification({
+            title: "New PDF file selected",
+            body: "The file will be merged"
+        });
+
+        notificaton.show();
+
         event.reply("pdf-selected", { files: selectedfiles });
     });
 

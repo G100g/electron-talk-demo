@@ -4,25 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Hello World!</title>
+    <style>
+    
+    #pdf-list {
+        min-height: 200px;
+        background-color: rgb(226, 255, 169);
+        color: black;
+    }
+    
+    </style>
+
 </head>
 
 <body>
-    <h1>Hello World!</h1>
+    <h1>PDF Merge</h1>
 
     <button type="button" id="select-pdf">Select PDF</button>
-
+ 
     <ul id="pdf-list">
 
     </ul>
 
     <button type="button" id="concat-pdf">Concat</button>
 
-
-    We are using node
-    <script>document.write(process.versions.node)</script>,
-    Chrome
-    <script>document.write(process.versions.chrome)</script>,
-    and Electron
+    <p>
+        We are using node
+        <script>document.write(process.versions.node)</script>,
+        Chrome
+        <script>document.write(process.versions.chrome)</script>,
+        and Electron
+    </p>
     <script src="./mainWindow.js"></script>.
 </body>
 
